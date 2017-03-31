@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.lab04.model.Corso;
+import it.polito.tdp.lab04.model.Model;
+import it.polito.tdp.lab04.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,6 +14,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class SegreteriaStudentiController {
+	
+	Model model;
 
     @FXML
     private ResourceBundle resources;
@@ -20,7 +24,7 @@ public class SegreteriaStudentiController {
     private URL location;
 
     @FXML
-    private ComboBox<Corso> cmbCorsi;
+    private ComboBox<String> cmbCorsi;
 
     @FXML
     private Button btnCercaIscrittiCorso;
@@ -56,12 +60,27 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doCercaIscrittiCorso(ActionEvent event) {
-
+    	String nomeCorso = cmbCorsi.getValue();
+    	Corso c = model.cercaCorso(nomeCorso);
+    	txtResult.clear();
+    	for (String s : model.getIscritti(c)){
+    	txtResult.appendText(s);
+    	}
     }
 
     @FXML
     void doCercaNome(ActionEvent event) {
-
+    	String matricola = txtMatricola.getText();
+    	
+    	Studente st = model.getStudente(matricola);
+    	
+    	if (st==null){
+    		txtResult.appendText("Studente non trovato\n");
+    	} else {
+    		txtResult.appendText("Studente trovato\n");
+    		txtNome.setText(st.getNome());
+    		txtCognome.setText(st.getCognome());
+    	}
     }
 
     @FXML
@@ -71,9 +90,23 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doReset(ActionEvent event) {
-
+    	txtMatricola.clear();
+    	txtNome.clear();
+    	txtCognome.clear();
+    	txtResult.clear();
     }
-
+    
+    
+    public void setModel(Model model) {
+		this.model = model;
+		cmbCorsi.getItems().addAll(model.getCodiceCorsi());
+		//METODO 1
+	       // for (String s : model.getCodiceCorsi()){
+	        	// cmbCorsi.getItems().addAll(s);
+	        //}
+	}
+    
+    
     @FXML
     void initialize() {
         assert cmbCorsi != null : "fx:id=\"cmbCorsi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
@@ -89,5 +122,10 @@ public class SegreteriaStudentiController {
 
         
         
+        
+      
+        
     }
+
+	
 }
