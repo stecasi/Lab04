@@ -55,6 +55,11 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doCercaCorsi(ActionEvent event) {
+    	String matricola = txtMatricola.getText();
+    	
+    	for (Corso c : model.getCorsiSingoloStudente(matricola)){
+    		txtResult.appendText(c.getCodins()+" "+c.getNome()+" "+c.getCrediti()+" crediti "+c.getPd()+" semestre\n");
+    	}
 
     }
 
@@ -63,8 +68,13 @@ public class SegreteriaStudentiController {
     	String nomeCorso = cmbCorsi.getValue();
     	Corso c = model.cercaCorso(nomeCorso);
     	txtResult.clear();
-    	for (String s : model.getIscritti(c)){
-    	txtResult.appendText(s);
+    	if (c==null){
+    		txtResult.appendText("Non hai selezionato alcun corso");
+    	}
+    	else {
+    	for (Studente s : model.getIscritti(c)){
+    	txtResult.appendText(s.getMatricola()+" "+s.getCognome()+" "+s.getNome()+" "+s.getCds()+"\n");
+    	}
     	}
     }
 
@@ -85,6 +95,32 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doIscrivi(ActionEvent event) {
+    	String nomeCorso = cmbCorsi.getValue();
+    	String matricola = txtMatricola.getText();
+    	Corso c = model.cercaCorso(nomeCorso);
+    	Studente s = model.getStudente(matricola);
+    	
+    	
+    	if (c==null || s==null){
+    		if (c==null){
+        		txtResult.appendText("Non hai selezionato alcun corso");
+        	}
+        	if (s==null){
+        		txtResult.appendText("Studente non presente nel database");
+        	}
+    	}
+    	else {
+    		boolean result = model.iscrivi(s, c);
+    		if (result){
+    		txtResult.appendText("Studente:\n "+s.getCognome()+" "+s.getNome()+" "+s.getMatricola()+" iscritto al corso " +c.getCodins()+" "+c.getNome()+"\n");
+    		}
+    		else {
+    			txtResult.appendText("Errore");
+    		}
+    	}
+    	
+    	
+    	
 
     }
 
@@ -99,6 +135,7 @@ public class SegreteriaStudentiController {
     
     public void setModel(Model model) {
 		this.model = model;
+		//LA LISTA DELLA COMBO VA INIZIALIZZATA QUI
 		cmbCorsi.getItems().addAll(model.getCodiceCorsi());
 		//METODO 1
 	       // for (String s : model.getCodiceCorsi()){
@@ -120,7 +157,13 @@ public class SegreteriaStudentiController {
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
         assert btnClear != null : "fx:id=\"btnClear\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
 
-        
+        //
+        //
+        //IMPORTANTE!!!
+        //NON SI PUO' INIZIALIZZARE QUI LA COMBO CON LA LISTA DEI CORSI
+        //LO SI DEVE FARE NEL METODO CHE PASSA IL MODEL AL CONTROLLER
+        //
+        //
         
         
       

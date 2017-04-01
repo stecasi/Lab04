@@ -34,9 +34,9 @@ public class Model {
 		
 	}
 	
-	public List <String> getIscritti(Corso corso){
+	public List <Studente> getIscritti(Corso corso){
 		CorsoDAO dao = new CorsoDAO();
-		List <String> iscrittiLista = new LinkedList <String>();
+		List <Studente> iscrittiLista = new LinkedList <Studente>();
 		iscrittiLista.addAll(dao.getStudentiIscrittiAlCorso(corso));
 		return iscrittiLista;
 	}
@@ -51,5 +51,16 @@ public class Model {
 		
 		return null;
 	}
+	
+	public List <Corso> getCorsiSingoloStudente(String matricola){
+		StudenteDAO dao = new StudenteDAO();
+		List <Corso> corsiLista = new LinkedList <Corso>();
+		corsiLista.addAll(dao.getCorso(matricola));
+		return corsiLista;
+	}
 
+	public boolean iscrivi(Studente stud, Corso cor){
+		CorsoDAO dao = new CorsoDAO();
+		return dao.iscriviStudenteACorso(stud, cor);
+	}
 }

@@ -61,18 +61,23 @@ public class CorsoDAO {
 		// TODO
 	}
 
+	
+
+	
 	/*
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
-	public List <String> getStudentiIscrittiAlCorso(Corso corso) {
+	public List <Studente> getStudentiIscrittiAlCorso(Corso corso) {
 		
 		String codiceCorso = corso.getCodins();
 		
-		final String sql = "SELECT matricola "
-				+ "FROM iscrizione "
-				+ "WHERE codins = ? ";
+		
+		
+		final String sql = "SELECT * "
+				+ "FROM iscrizione i, studente s "
+				+ "WHERE codins = ? AND i.matricola=s.matricola ";
 
-		List<String> studenti = new LinkedList<String>();
+		List<Studente> studentiIscritti = new LinkedList<Studente>();
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -84,16 +89,21 @@ public class CorsoDAO {
 
 			while (rs.next()) {
 				
-				String matricolaStudenteCorso = rs.getString("matricola");
+				String matricolaStudenteCorso = rs.getString("i.matricola");
+				String nomeStudente = rs.getString("nome");
+				String cognomeStudente = rs.getString("cognome");
+				String cds = rs.getString("s.cds");
+				
+				Studente stud = new Studente (matricolaStudenteCorso, nomeStudente, cognomeStudente,cds);
 						
 				
 				// Aggiungi la matricola studente alla lista
 					
-					studenti.add(matricolaStudenteCorso+"\n");
+					studentiIscritti.add(stud);
 						
 			}
 
-			return studenti;
+			return studentiIscritti;
 			
 			
 		} catch (SQLException e) {
@@ -106,8 +116,39 @@ public class CorsoDAO {
 	 * Data una matricola ed il codice insegnamento,
 	 * iscrivi lo studente al corso.
 	 */
-	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
-		// TODO
-		return false;
+	public boolean iscriviStudenteACorso(Studente studente, Corso corso) {
+		
+		
+		String sql = "INSERT INTO `iscritticorsi`.`iscrizione` (`matricola`, `codins`) VALUES (?, ?);";
+		
+
+		try {
+			Connection conn = ConnectDB.getConnection() ;
+			
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setString(1, studente.getMatricola()) ;
+			st.setString(2, corso.getCodins()) ;
+			
+			
+			int result = st.executeUpdate() ;
+			
+			conn.close();
+			
+			if(result==1) {
+				return true ;
+			} else {
+				return false ;
+			}
+			
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return false ;
+		
 	}
+		
+
 }
